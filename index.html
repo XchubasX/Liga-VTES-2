@@ -1,0 +1,428 @@
+html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liga VTES - Registro y Coordinación</title>
+  <style>
+    :root {
+      --bg-color: #0d0d0e;
+      --card-bg: #1a1a1c;
+      --accent-red: #8b0000;
+      --accent-crimson: #b22222;
+      --text-gold: #d4af37;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --border-color: #333336;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 50px;
+    }
+
+    header {
+      background: linear-gradient(180deg, #1f0000 0%, #0d0d0e 100%);
+      border-bottom: 2px solid var(--accent-red);
+      text-align: center;
+      padding: 25px 15px;
+    }
+
+    header h1 {
+      color: var(--text-gold);
+      font-size: 2rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(139, 0, 0, 0.7);
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-top: 5px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: #141416;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 14px 18px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    nav button:hover, nav button.active {
+      color: var(--text-gold);
+      border-bottom: 3px solid var(--accent-crimson);
+      background-color: rgba(139, 0, 0, 0.2);
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    h2 {
+      color: var(--text-gold);
+      border-bottom: 1px solid var(--accent-red);
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: rgba(139, 0, 0, 0.3);
+      color: var(--text-gold);
+    }
+
+    .form-group { margin-bottom: 15px; }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text-gold);
+      font-size: 0.9rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      background-color: #0d0d0e;
+      color: #fff;
+      font-size: 1rem;
+    }
+
+    button.btn {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--accent-red);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+
+    button.btn:hover { background-color: var(--accent-crimson); }
+
+    .mesa-box {
+      border: 1px solid var(--border-color);
+      background: #121214;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+
+    .mesa-title { font-weight: bold; color: var(--text-gold); margin-bottom: 8px; }
+
+    .notice {
+      background: rgba(212, 175, 55, 0.1);
+      border-left: 4px solid var(--text-gold);
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🦇 Liga VTES 🩸</h1>
+    <p>Vampire: The Eternal Struggle - Clasificación y Mesas</p>
+  </header>
+
+  <nav>
+    <button class="tab-btn active" onclick="showTab('standings')">🏆 Posiciones</button>
+    <button class="tab-btn" onclick="showTab('registro')">📝 Pre-Inscripción</button>
+    <button class="tab-btn" onclick="showTab('mesas')">⚔️ Jornada Actual</button>
+    <button class="tab-btn" onclick="showTab('admin')">⚙️ Admin</button>
+  </nav>
+
+  <div class="container">
+
+    <!-- TABLA DE POSICIONES -->
+    <div id="standings" class="tab-content active">
+      <div class="card">
+        <h2>Tabla General de Posiciones</h2>
+        <div id="standings-loading">Cargando puntuaciones...</div>
+        <table id="standings-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Jugador</th>
+              <th>GW (Game Wins)</th>
+              <th>VP (Victory Points)</th>
+            </tr>
+          </thead>
+          <tbody id="standings-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PRE-INSCRIPCIÓN -->
+    <div id="registro" class="tab-content">
+      <div class="card">
+        <h2>Pre-Inscripción para la Próxima Fecha</h2>
+        <div class="notice">Inscríbete previo a la jornada para coordinar las mesas de juego a tiempo.</div>
+        <div class="form-group">
+          <label for="reg-jornada-select">Seleccionar Jornada:</label>
+          <select id="reg-jornada-select" onchange="loadRegistrations()"></select>
+        </div>
+        <div class="form-group">
+          <label for="player-name">Tu Nombre o Apodo de Matusalén:</label>
+          <input type="text" id="player-name" placeholder="Ej: Prince_Carlos / Victor">
+        </div>
+        <button class="btn" onclick="registerPlayer()">Confirmar Mi Asistencia</button>
+
+        <h3 style="margin-top:25px; color:var(--text-gold); font-size:1.1rem;">Jugadores Confirmados:</h3>
+        <ul id="registered-list" style="margin-top:10px; padding-left: 20px; color: var(--text-main);"></ul>
+      </div>
+    </div>
+
+    <!-- JORNADA ACTUAL Y MESAS -->
+    <div id="mesas" class="tab-content">
+      <div class="card">
+        <h2>Mesas Asignadas</h2>
+        <div class="form-group">
+          <label for="mesas-jornada-select">Seleccionar Jornada:</label>
+          <select id="mesas-jornada-select" onchange="loadMesasView()"></select>
+        </div>
+        <div id="mesas-container"></div>
+      </div>
+    </div>
+
+    <!-- PANEL DE ADMINISTRACIÓN -->
+    <div id="admin" class="tab-content">
+      <div class="card">
+        <h2>Panel de Administración</h2>
+        <div id="admin-login-box">
+          <div class="form-group">
+            <label for="admin-pin">Clave de Administrador:</label>
+            <input type="password" id="admin-pin" placeholder="Ingresa tu clave (Por defecto: 1234)">
+          </div>
+          <button class="btn" onclick="checkAdmin()">Entrar como Organizador</button>
+        </div>
+
+        <div id="admin-panel" style="display:none;">
+          <h3>1. Crear Nueva Fecha / Jornada</h3>
+          <div class="form-group">
+            <label for="new-jornada-name">Nombre de la Fecha:</label>
+            <input type="text" id="new-jornada-name" placeholder="Ej: Fecha 1 - 15 de Octubre">
+          </div>
+          <button class="btn" onclick="createNewJornada()">Crear Jornada</button>
+
+          <hr style="margin:20px 0; border-color:var(--border-color);">
+
+          <h3>2. Generar Mesas Rápidas</h3>
+          <div class="form-group">
+            <label for="admin-jornada-select">Seleccionar Fecha:</label>
+            <select id="admin-jornada-select"></select>
+          </div>
+          <button class="btn" onclick="generateTablesForJornada()">Distribuir Jugadores en Mesas de 4 o 5</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FIREBASE SDKs & LÓGICA -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getFirestore, collection, addDoc, getDocs, doc, setDoc 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Configuración de tu proyecto en Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_wP18R1SfNQDXvewOE2KpxvpoSeFeiqU",
+      authDomain: "liga-vtes2.firebaseapp.com",
+      projectId: "liga-vtes2",
+      storageBucket: "liga-vtes2.firebasestorage.app",
+      messagingSenderId: "220090084809",
+      appId: "1:220090084809:web:c644f6b6bb0f2a974e4c18"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.showTab = function(tabId) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+      if(tabId === 'standings') loadStandings();
+      if(tabId === 'registro' || tabId === 'mesas') loadJornadasDropdowns();
+    };
+
+    window.checkAdmin = function() {
+      const pin = document.getElementById('admin-pin').value;
+      if (pin === '1234') { // Cambia '1234' por la clave personal que prefieras
+        document.getElementById('admin-login-box').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+        loadJornadasDropdowns();
+      } else { alert('Clave incorrecta'); }
+    };
+
+    async function loadJornadasDropdowns() {
+      const querySnapshot = await getDocs(collection(db, "jornadas"));
+      const regSelect = document.getElementById('reg-jornada-select');
+      const mesasSelect = document.getElementById('mesas-jornada-select');
+      const adminSelect = document.getElementById('admin-jornada-select');
+      
+      regSelect.innerHTML = ''; mesasSelect.innerHTML = ''; adminSelect.innerHTML = '';
+
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const opt = `<option value="${docSnap.id}">${data.nombre}</option>`;
+        regSelect.innerHTML += opt;
+        mesasSelect.innerHTML += opt;
+        adminSelect.innerHTML += opt;
+      });
+
+      if (regSelect.value) loadRegistrations();
+      if (mesasSelect.value) loadMesasView();
+    }
+
+    window.registerPlayer = async function() {
+      const jornadaId = document.getElementById('reg-jornada-select').value;
+      const name = document.getElementById('player-name').value.trim();
+      if (!jornadaId || !name) return alert('Selecciona jornada e ingresa tu nombre.');
+
+      await addDoc(collection(db, `jornadas/${jornadaId}/registros`), { nombre: name });
+      document.getElementById('player-name').value = '';
+      alert('¡Pre-inscripción realizada con éxito!');
+      loadRegistrations();
+    };
+
+    window.loadRegistrations = async function() {
+      const jornadaId = document.getElementById('reg-jornada-select').value;
+      if(!jornadaId) return;
+      const list = document.getElementById('registered-list');
+      list.innerHTML = 'Cargando confirmados...';
+
+      const snap = await getDocs(collection(db, `jornadas/${jornadaId}/registros`));
+      list.innerHTML = '';
+      snap.forEach(d => { list.innerHTML += `<li>${d.data().nombre}</li>`; });
+    };
+
+    window.createNewJornada = async function() {
+      const name = document.getElementById('new-jornada-name').value.trim();
+      if(!name) return alert('Ingresa un nombre');
+      await addDoc(collection(db, "jornadas"), { nombre: name });
+      document.getElementById('new-jornada-name').value = '';
+      alert('Jornada creada');
+      loadJornadasDropdowns();
+    };
+
+    window.generateTablesForJornada = async function() {
+      const jornadaId = document.getElementById('admin-jornada-select').value;
+      if(!jornadaId) return alert('Selecciona una jornada');
+
+      const regSnap = await getDocs(collection(db, `jornadas/${jornadaId}/registros`));
+      let players = [];
+      regSnap.forEach(d => players.push(d.data().nombre));
+
+      if(players.length < 4) return alert('Se necesitan al menos 4 jugadores registrados.');
+      players.sort(() => Math.random() - 0.5);
+
+      function makeTables(list) {
+        let tables = [];
+        let temp = [...list];
+        while (temp.length >= 4) {
+          let size = (temp.length % 5 === 0 || temp.length === 5) ? 5 : 4;
+          tables.push(temp.splice(0, size));
+        }
+        if(temp.length > 0 && tables.length > 0) tables[tables.length - 1].push(...temp);
+        return tables;
+      }
+
+      await setDoc(doc(db, `jornadas/${jornadaId}/mesas/estructura`), {
+        ronda1: makeTables([...players]),
+        ronda2: makeTables([...players].reverse())
+      });
+
+      alert('¡Mesas para Ronda 1 y Ronda 2 generadas!');
+      loadMesasView();
+    };
+
+    window.loadMesasView = async function() {
+      const jornadaId = document.getElementById('mesas-jornada-select').value;
+      const container = document.getElementById('mesas-container');
+      if(!jornadaId) return;
+
+      const snap = await getDocs(collection(db, `jornadas/${jornadaId}/mesas`));
+      if(snap.empty) {
+        container.innerHTML = '<div class="notice">Aún no se han armado las mesas de esta jornada.</div>';
+        return;
+      }
+
+      let html = '';
+      snap.forEach(d => {
+        const data = d.data();
+        if(data.ronda1) {
+          html += '<h3 style="color:var(--text-gold); margin:15px 0 10px;">Mesa Ronda 1</h3>';
+          data.ronda1.forEach((m, i) => { html += `<div class="mesa-box"><div class="mesa-title">Mesa ${i+1}</div>${m.join(' • ')}</div>`; });
+        }
+        if(data.ronda2) {
+          html += '<h3 style="color:var(--text-gold); margin:15px 0 10px;">Mesa Ronda 2</h3>';
+          data.ronda2.forEach((m, i) => { html += `<div class="mesa-box"><div class="mesa-title">Mesa ${i+1}</div>${m.join(' • ')}</div>`; });
+        }
+      });
+      container.innerHTML = html;
+    };
+
+    window.loadStandings = async function() {
+      const body = document.getElementById('standings-body');
+      document.getElementById('standings-loading').style.display = 'none';
+      document.getElementById('standings-table').style.display = 'table';
+      body.innerHTML = '<tr><td colspan="4">No hay resultados todavía. ¡Empieza la liga registrando jornadas!</td></tr>';
+    };
+
+    loadStandings();
+  </script>
+</body>
+</html>
